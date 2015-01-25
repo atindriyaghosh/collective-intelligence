@@ -11,35 +11,35 @@ ratings = {
         'Batman Forever': 1}}
 
 
-def calcPearsonSim(user1, user2):
+def calc_pearson_sim(user1, user2):
     """
     Calculates the Pearson Similarity between user1 and user2
     """
-    def calcSqrtExpr(n, a, b):
+    def calc_sqrt_expr(n, a, b):
         return sqrt(n * a - pow(b, 2))
-    prodSum = 0
+    prod_sum = 0
     sum1 = 0
     sum2 = 0
-    sum1Sq = 0
-    sum2Sq = 0
+    sum1_sq = 0
+    sum2_sq = 0
     n = 0
     for movie in ratings[user1]:
         if movie in ratings[user2]:
             rating1 = ratings[user1][movie]
             rating2 = ratings[user2][movie]
-            prodSum += rating1 * rating2
+            prod_sum += rating1 * rating2
             sum1 += rating1
             sum2 += rating2
-            sum1Sq += pow(rating1, 2)
-            sum2Sq += pow(rating2, 2)
+            sum1_sq += pow(rating1, 2)
+            sum2_sq += pow(rating2, 2)
             n += 1
-    num = n * prodSum - sum1 * sum2
-    denom = calcSqrtExpr(n, sum1Sq, sum1) * calcSqrtExpr(n, sum2Sq, sum2)
+    num = n * prod_sum - sum1 * sum2
+    denom = calc_sqrt_expr(n, sum1_sq, sum1) * calc_sqrt_expr(n, sum2_sq, sum2)
     r = 0
     if denom > 0:
         r = num / denom
     return r
 
 if __name__ == '__main__':
-    similarityScore = calcPearsonSim("User1", "User2")
-    print similarityScore
+    similarity_score = calc_pearson_sim("User1", "User2")
+    print similarity_score

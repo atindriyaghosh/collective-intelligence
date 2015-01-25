@@ -13,28 +13,28 @@ ratings = {
 getcontext().prec = 2
 
 
-def calcEuclideanSim(user1, user2):
+def calc_euclidean_sim(user1, user2):
     """
     Calculates the Euclidean Similarity between user1 and user2
     """
 
     # Get the list of similar movies
-    similarMovies = [movie for movie in ratings[user1]
+    similar_movies = [movie for movie in ratings[user1]
                      if movie in ratings[user2]]
 
     # If there are similar movies calculate similarity score, else similarity
     # score is 0
-    similarityScore = 0
+    similarity_score = 0
 
-    if(len(similarMovies) != 0):
-        euclDistance = Decimal(sum(
+    if(len(similar_movies) != 0):
+        eucl_distance = Decimal(sum(
             pow(ratings[user1][movie] - ratings[user2][movie], 2)
-            for movie in similarMovies))
+            for movie in similar_movies))
 
-        similarityScore = 1 / (1 + euclDistance)
+        similarity_score = 1 / (1 + eucl_distance)
 
-    return similarityScore
+    return similarity_score
 
 if __name__ == '__main__':
-    similarityScore = calcEuclideanSim("User1", "User2")
-    print similarityScore
+    similarity_score = calc_euclidean_sim("User1", "User2")
+    print similarity_score

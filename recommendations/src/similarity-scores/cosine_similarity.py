@@ -15,27 +15,27 @@ movies = ['Seven Samurai', 'Taxi Driver',
           'Batman Forever', 'Nosferatu']
 
 
-def calcCosineSim(user1, user2):
+def calc_cosine_sim(user1, user2):
     """
     Calculates the Cosine Similarity between user1 and user2
     """
 
-    def calcLength(user):
+    def calc_length(user):
         return sqrt(sum(
             pow(ratings[user][movie], 2) for movie in ratings[
                 user]))
-    user1Length = calcLength(user1)
-    user2Length = calcLength(user2)
-    dotProd = 0
+    user1_length = calc_length(user1)
+    user2_length = calc_length(user2)
+    dot_prod = 0
     for movie in movies:
-        dotProd += ratings[user1].get(
+        dot_prod += ratings[user1].get(
             movie, 0) * ratings[user2].get(
             movie, 0)
 
-    similarityScore = dotProd / (user1Length * user2Length)
+    similarity_score = dot_prod / (user1_length * user2_length)
 
-    return similarityScore
+    return similarity_score
 
 if __name__ == '__main__':
-    similarityScore = calcCosineSim("User1", "User2")
-    print similarityScore
+    similarity_score = calc_cosine_sim("User1", "User2")
+    print similarity_score

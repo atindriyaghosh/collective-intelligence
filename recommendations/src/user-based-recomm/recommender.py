@@ -17,93 +17,93 @@ class Recommender:
     def __init__(self, movies, ratings):
         self._items = {}
         self._ratings = {}
-        self._loadItems(movies)
-        self._loadRatings(ratings)
+        self._load_items(movies)
+        self._load_ratings(ratings)
         getcontext().prec = 2
 
-    def _loadItems(self, path):
+    def _load_items(self, path):
         with io.open(path, "rb") as f:
             reader = csv.reader(f, delimiter="|")
             for row in reader:
                 self._items[row[0]] = row[1]
 
-    def _loadRatings(self, path):
+    def _load_ratings(self, path):
         with io.open(path, "rb") as f:
             reader = csv.reader(f, delimiter="\t")
             for row in reader:
                 self._ratings.setdefault(row[0], {})[row[1]] = int(row[2])
 
-    def _calcEuclideanSim(self, user1, user2):
-        similarMovies = [movie for movie in self._ratings[user1]
-                         if movie in self._ratings[user2]]
+    def _calc_euclidean_sim(self, user1, user2):
+        similar_movies = [movie for movie in self._ratings[user1]
+                          if movie in self._ratings[user2]]
 
-        similarityScore = 0
+        similarity_score = 0
 
-        if(len(similarMovies) != 0):
-            euclDistance = Decimal(sum(
+        if(len(similar_movies) != 0):
+            eucl_distance = Decimal(sum(
                 pow(self._ratings[user1][movie] -
                     self._ratings[user2][movie], 2)
-                for movie in similarMovies))
+                for movie in similar_movies))
 
-            similarityScore = 1 / (1 + euclDistance)
+            similarity_score = 1 / (1 + eucl_distance)
 
-        return similarityScore
+        return similarity_score
 
-    def _calcPearsonSim(self, user1, user2):
-        def calcDenom(n, a, b):
+    def _calc_pearson_sim(self, user1, user2):
+        def calc_denom(n, a, b):
             return sqrt(n * a - pow(b, 2))
-        prodSum = 0
+        prod_sum = 0
         sum1 = 0
         sum2 = 0
-        sum1Sq = 0
-        sum2Sq = 0
+        sum1_sq = 0
+        sum2_sq = 0
         n = 0
         for movie in self._ratings[user1]:
             if movie in self._ratings[user2]:
                 rating1 = self._ratings[user1][movie]
                 rating2 = self._ratings[user2][movie]
-                prodSum += rating1 * rating2
+                prod_sum += rating1 * rating2
                 sum1 += rating1
                 sum2 += rating2
-                sum1Sq += pow(rating1, 2)
-                sum2Sq += pow(rating2, 2)
+                sum1_sq += pow(rating1, 2)
+                sum2_sq += pow(rating2, 2)
                 n += 1
-        num = n * prodSum - sum1 * sum2
-        denom = calcDenom(n, sum1Sq, sum1) * calcDenom(n, sum2Sq, sum2)
+        num = n * prod_sum - sum1 * sum2
+        denom = calc_denom(n, sum1_sq, sum1) * calc_denom(n, sum2_sq, sum2)
         r = 0
         if denom > 0:
             r = num / denom
         return r
 
-    def _calcCosineSim(self, user1, user2):
-        def calcLength(user):
+    def _calc_cosine_sim(self, user1, user2):
+        def calc_length(user):
             return sqrt(sum(
                 pow(self._ratings[user][movie], 2) for movie in self._ratings[
                     user]))
-        user1Length = calcLength(user1)
-        user2Length = calcLength(user2)
-        dotProd = 0
+        user1_length = calc_length(user1)
+        user2_length = calc_length(user2)
+        dot_prod = 0
         for movie in self._items:
-            dotProd += self._ratings[user1].get(
+            dot_prod += self._ratings[user1].get(
                 movie, 0) * self._ratings[user2].get(
                 movie, 0)
 
-        similarityScore = dotProd / (user1Length * user2Length)
+        similarity_score = dot_prod / (user1_length * user2_length)
 
-        return float(similarityScore)
+        return float(similarity_score)
 
-    def _calcSimilarity(self, user1, user2, simAlgo):
+    def _calc_similarity(self, user1, user2, sim_algo):
         sim = 0.0
-        if(simAlgo == "eucl"):
-            sim = self._calcEuclideanSim(user1, user2)
-        elif(simAlgo == "pearson"):
-            sim = self._calcPearsonSim(user1, user2)
-        elif(simAlgo == "cosine"):
-            sim = self._calcCosineSim(user1, user2)
+        if(sim_algo == "eucl"):
+            sim = self._calc_euclidean_sim(user1, user2)
+        elif(sim_algo == "pearson"):
+            sim = self._calc_pearson_sim(user1, user2)
+        elif(sim_algo == "cosine"):
+            sim = self._calc_cosine_sim(user1, user2)
 
         return sim
 
-    def genRecommendations(self, user, simAlgo, numRecs=3):
+    def gen_recomm(self, user, sim_algo, num_recs=3):
         """Generates recommendatons based on the following inputs
             1. User for whom recommendations are to be provided
             2. Recommendation algorithm to use
@@ -112,31 +112,31 @@ class Recommender:
                cosine - Cosine similarity
             3. Maximum number of recommendations
         """
-        totalWeights = {}
-        simSum = {}
+        total_weights = {}
+        sim_sum = {}
         for other_user in self._ratings.keys():
             if(user != other_user):
                 # Calculate similarity scores according to passed algorithm
                 # name.
-                sim = self._calcSimilarity(user, other_user, simAlgo)
+                sim = self._calc_similarity(user, other_user, sim_algo)
                 if(sim > 0):
                     for movie in self._ratings[other_user]:
                         if movie not in self._ratings[user] and self._ratings[
                                 other_user][movie] > 0:
-                            totalWeights.setdefault(movie, 0)
-                            simSum.setdefault(movie, 0)
-                            totalWeights[movie] += sim * \
+                            total_weights.setdefault(movie, 0)
+                            sim_sum.setdefault(movie, 0)
+                            total_weights[movie] += sim * \
                                 self._ratings[other_user][movie]
-                            simSum[movie] += sim
+                            sim_sum[movie] += sim
 
-        recommMovies = [(movie, (weight / simSum[movie]))
-                        for movie, weight in totalWeights.items()]
+        recomm_movies = [(movie, (weight / sim_sum[movie]))
+                        for movie, weight in total_weights.items()]
 
-        recommMovies = sorted(recommMovies, key=lambda x: x[1])
-        recommMovies.reverse()
-        recommMovies = [(i + 1, self._items[movies[0]])
-                        for i, movies in enumerate(recommMovies[:numRecs])]
-        return recommMovies
+        recomm_movies = sorted(recomm_movies, key=lambda x: x[1])
+        recomm_movies.reverse()
+        recomm_movies = [(i + 1, self._items[movies[0]])
+                        for i, movies in enumerate(recomm_movies[:num_recs])]
+        return recomm_movies
 
 if __name__ == '__main__':
     recommender = Recommender(
@@ -144,8 +144,8 @@ if __name__ == '__main__':
         ratings="../data/u.data")
     print "User = 1945"
     print "\nAlgorithm = Euclidean"
-    print recommender.genRecommendations("1945", "eucl", 15)
+    print recommender.gen_recomm("1945", "eucl", 15)
     print "\nAlgorithm = Pearson"
-    print recommender.genRecommendations("1945", "pearson", 15)
+    print recommender.gen_recomm("1945", "pearson", 15)
     print "\nAlgorithm = Cosine"
-    print recommender.genRecommendations("1945", "cosine", 15)
+    print recommender.gen_recomm("1945", "cosine", 15)
