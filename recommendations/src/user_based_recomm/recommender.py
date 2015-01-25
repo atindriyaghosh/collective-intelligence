@@ -4,7 +4,7 @@ import io
 from math import sqrt
 
 
-class Recommender:
+class Recommender(object):
 
     """
     The Recommender class is responsible for providing recommendations based on
@@ -33,7 +33,7 @@ class Recommender:
             for row in reader:
                 self._ratings.setdefault(row[0], {})[row[1]] = int(row[2])
 
-    def _calc_euclidean_sim(self, user1, user2):
+    def calc_euclidean_sim(self, user1, user2):
         similar_movies = [movie for movie in self._ratings[user1]
                           if movie in self._ratings[user2]]
 
@@ -49,7 +49,7 @@ class Recommender:
 
         return similarity_score
 
-    def _calc_pearson_sim(self, user1, user2):
+    def calc_pearson_sim(self, user1, user2):
         def calc_denom(n, a, b):
             return sqrt(n * a - pow(b, 2))
         prod_sum = 0
@@ -75,7 +75,7 @@ class Recommender:
             r = num / denom
         return r
 
-    def _calc_cosine_sim(self, user1, user2):
+    def calc_cosine_sim(self, user1, user2):
         def calc_length(user):
             return sqrt(sum(
                 pow(self._ratings[user][movie], 2) for movie in self._ratings[
@@ -92,14 +92,14 @@ class Recommender:
 
         return float(similarity_score)
 
-    def _calc_similarity(self, user1, user2, sim_algo):
+    def calc_similarity(self, user1, user2, sim_algo):
         sim = 0.0
         if sim_algo == "eucl":
-            sim = self._calc_euclidean_sim(user1, user2)
+            sim = self.calc_euclidean_sim(user1, user2)
         elif sim_algo == "pearson":
-            sim = self._calc_pearson_sim(user1, user2)
+            sim = self.calc_pearson_sim(user1, user2)
         elif sim_algo == "cosine":
-            sim = self._calc_cosine_sim(user1, user2)
+            sim = self.calc_cosine_sim(user1, user2)
 
         return sim
 
@@ -118,7 +118,7 @@ class Recommender:
             if user != other_user:
                 # Calculate similarity scores according to passed algorithm
                 # name.
-                sim = self._calc_similarity(user, other_user, sim_algo)
+                sim = self.calc_similarity(user, other_user, sim_algo)
                 if sim > 0:
                     for movie in self._ratings[other_user]:
                         if movie not in self._ratings[user] and self._ratings[
