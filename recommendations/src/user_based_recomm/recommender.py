@@ -22,14 +22,14 @@ class Recommender:
         getcontext().prec = 2
 
     def _load_items(self, path):
-        with io.open(path, "rb") as f:
-            reader = csv.reader(f, delimiter="|")
+        with io.open(path, "rb") as f_name:
+            reader = csv.reader(f_name, delimiter="|")
             for row in reader:
                 self._items[row[0]] = row[1]
 
     def _load_ratings(self, path):
-        with io.open(path, "rb") as f:
-            reader = csv.reader(f, delimiter="\t")
+        with io.open(path, "rb") as f_name:
+            reader = csv.reader(f_name, delimiter="\t")
             for row in reader:
                 self._ratings.setdefault(row[0], {})[row[1]] = int(row[2])
 
@@ -39,7 +39,7 @@ class Recommender:
 
         similarity_score = 0
 
-        if(len(similar_movies) != 0):
+        if len(similar_movies) != 0:
             eucl_distance = Decimal(sum(
                 pow(self._ratings[user1][movie] -
                     self._ratings[user2][movie], 2)
@@ -94,11 +94,11 @@ class Recommender:
 
     def _calc_similarity(self, user1, user2, sim_algo):
         sim = 0.0
-        if(sim_algo == "eucl"):
+        if sim_algo == "eucl":
             sim = self._calc_euclidean_sim(user1, user2)
-        elif(sim_algo == "pearson"):
+        elif sim_algo == "pearson":
             sim = self._calc_pearson_sim(user1, user2)
-        elif(sim_algo == "cosine"):
+        elif sim_algo == "cosine":
             sim = self._calc_cosine_sim(user1, user2)
 
         return sim
@@ -115,11 +115,11 @@ class Recommender:
         total_weights = {}
         sim_sum = {}
         for other_user in self._ratings.keys():
-            if(user != other_user):
+            if user != other_user:
                 # Calculate similarity scores according to passed algorithm
                 # name.
                 sim = self._calc_similarity(user, other_user, sim_algo)
-                if(sim > 0):
+                if sim > 0:
                     for movie in self._ratings[other_user]:
                         if movie not in self._ratings[user] and self._ratings[
                                 other_user][movie] > 0:
@@ -130,22 +130,22 @@ class Recommender:
                             sim_sum[movie] += sim
 
         recomm_movies = [(movie, (weight / sim_sum[movie]))
-                        for movie, weight in total_weights.items()]
+                         for movie, weight in total_weights.items()]
 
         recomm_movies = sorted(recomm_movies, key=lambda x: x[1])
         recomm_movies.reverse()
-        recomm_movies = [(i + 1, self._items[movies[0]])
-                        for i, movies in enumerate(recomm_movies[:num_recs])]
+        recomm_movies = [(i + 1, self._items[MOVIES[0]])
+                         for i, MOVIES in enumerate(recomm_movies[:num_recs])]
         return recomm_movies
 
 if __name__ == '__main__':
-    recommender = Recommender(
+    RECOMM = Recommender(
         movies="../data/u.item",
         ratings="../data/u.data")
     print "User = 1945"
     print "\nAlgorithm = Euclidean"
-    print recommender.gen_recomm("1945", "eucl", 15)
+    print RECOMM.gen_recomm("1945", "eucl", 15)
     print "\nAlgorithm = Pearson"
-    print recommender.gen_recomm("1945", "pearson", 15)
+    print RECOMM.gen_recomm("1945", "pearson", 15)
     print "\nAlgorithm = Cosine"
-    print recommender.gen_recomm("1945", "cosine", 15)
+    print RECOMM.gen_recomm("1945", "cosine", 15)

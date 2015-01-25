@@ -1,6 +1,6 @@
 from decimal import Decimal, getcontext
 
-ratings = {
+RATINGS = {
     'User1': {
         'Seven Samurai': 4, 'Taxi Driver': 3,
         'Usual Suspects, The': 3, 'Clerks': 1,
@@ -19,22 +19,22 @@ def calc_euclidean_sim(user1, user2):
     """
 
     # Get the list of similar movies
-    similar_movies = [movie for movie in ratings[user1]
-                     if movie in ratings[user2]]
+    similar_movies = [movie for movie in RATINGS[user1]
+                      if movie in RATINGS[user2]]
 
     # If there are similar movies calculate similarity score, else similarity
     # score is 0
-    similarity_score = 0
+    sim_score = 0
 
-    if(len(similar_movies) != 0):
+    if len(similar_movies) != 0:
         eucl_distance = Decimal(sum(
-            pow(ratings[user1][movie] - ratings[user2][movie], 2)
+            pow(RATINGS[user1][movie] - RATINGS[user2][movie], 2)
             for movie in similar_movies))
 
-        similarity_score = 1 / (1 + eucl_distance)
+        sim_score = 1 / (1 + eucl_distance)
 
-    return similarity_score
+    return sim_score
 
 if __name__ == '__main__':
-    similarity_score = calc_euclidean_sim("User1", "User2")
-    print similarity_score
+    SIMILARITY_SCORES = calc_euclidean_sim("User1", "User2")
+    print SIMILARITY_SCORES

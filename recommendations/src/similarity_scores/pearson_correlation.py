@@ -1,6 +1,6 @@
 from math import sqrt
 
-ratings = {
+RATINGS = {
     'User1': {
         'Seven Samurai': 4, 'Taxi Driver': 3,
         'Usual Suspects, The': 3, 'Clerks': 1,
@@ -13,7 +13,7 @@ ratings = {
 
 def calc_pearson_sim(user1, user2):
     """
-    Calculates the Pearson Similarity between user1 and user2
+    Calculates the Pearson Similarity between user1 and user2.
     """
     def calc_sqrt_expr(n, a, b):
         return sqrt(n * a - pow(b, 2))
@@ -23,10 +23,10 @@ def calc_pearson_sim(user1, user2):
     sum1_sq = 0
     sum2_sq = 0
     n = 0
-    for movie in ratings[user1]:
-        if movie in ratings[user2]:
-            rating1 = ratings[user1][movie]
-            rating2 = ratings[user2][movie]
+    for movie in RATINGS[user1]:
+        if movie in RATINGS[user2]:
+            rating1 = RATINGS[user1][movie]
+            rating2 = RATINGS[user2][movie]
             prod_sum += rating1 * rating2
             sum1 += rating1
             sum2 += rating2
@@ -41,5 +41,5 @@ def calc_pearson_sim(user1, user2):
     return r
 
 if __name__ == '__main__':
-    similarity_score = calc_pearson_sim("User1", "User2")
-    print similarity_score
+    SIM_SCORE = calc_pearson_sim("User1", "User2")
+    print SIM_SCORE
