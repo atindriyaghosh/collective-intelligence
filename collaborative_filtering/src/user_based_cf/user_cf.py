@@ -4,10 +4,10 @@ import io
 from math import sqrt
 
 
-class Recommender(object):
+class UserBasedCF(object):
 
     """
-    The Recommender class is responsible for providing recommendations based on
+    The UserBasedCF class is responsible for providing recommendations based on
     one of the following three algorithms
     1. Euclidian Distance
     2. Pearson Correlation
@@ -139,7 +139,7 @@ class Recommender(object):
         return recomm_movies
 
 if __name__ == '__main__':
-    RECOMM = Recommender(
+    RECOMM = UserBasedCF(
         movies="../data/u.item",
         ratings="../data/u.data")
     print "User = 1945"
