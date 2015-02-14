@@ -104,7 +104,7 @@ class UserBasedCF(object):
         return sim
 
     def gen_recomm(self, user, sim_algo, num_recs=3):
-        """Generates recommendatons based on the following inputs
+        """Generates recommendations based on the following inputs
             1. User for whom recommendations are to be provided
             2. Recommendation algorithm to use
                eucl - Euclidian distance
@@ -139,13 +139,13 @@ class UserBasedCF(object):
         return recomm_movies
 
 if __name__ == '__main__':
-    RECOMM = UserBasedCF(
+    USER_BASED_CF = UserBasedCF(
         movies="../data/u.item",
         ratings="../data/u.data")
     print "User = 1945"
     print "\nAlgorithm = Euclidean"
-    print RECOMM.gen_recomm("1945", "eucl", 15)
+    print USER_BASED_CF.gen_recomm("1945", "eucl", 15)
     print "\nAlgorithm = Pearson"
-    print RECOMM.gen_recomm("1945", "pearson", 15)
+    print USER_BASED_CF.gen_recomm("1945", "pearson", 15)
     print "\nAlgorithm = Cosine"
-    print RECOMM.gen_recomm("1945", "cosine", 15)
+    print USER_BASED_CF.gen_recomm("1945", "cosine", 15)
